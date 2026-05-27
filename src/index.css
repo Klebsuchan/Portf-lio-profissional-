@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Default: Dark Theme (Enterprise Tech) */
+  --bg-color: #030303; 
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --glass-bg: rgba(20, 20, 20, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --theme-neon: #00ff66;
+  --theme-neon-hover: #00e55c;
+  --theme-purple: #a855f7; /* Tech Purple */
+  --gradient-text-start: #ffffff;
+  --gradient-text-end: #94a3b8;
+}
+
+:root[class~="light"], body.light {
+  /* Light Theme (Clean) */
+  --bg-color: #f8fafc;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --theme-neon: #00a843; /* Darker green */
+  --theme-neon-hover: #008f39;
+  --theme-purple: #7e22ce; /* Royal purple */
+  --gradient-text-start: #0f172a;
+  --gradient-text-end: #475569;
+}
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --color-neon: var(--theme-neon);
+  --color-neon-hover: var(--theme-neon-hover);
+  --color-purple: var(--theme-purple);
+  --color-cyan: var(--theme-purple); /* Aliased to apply purple without rewriting all tags */
+  --color-black-deep: var(--bg-color);
+  --color-white-glass: var(--glass-bg);
+  --color-border-glass: var(--glass-border);
+  
+  --color-text-main: var(--text-primary);
+  --color-text-muted: var(--text-secondary);
+}
+
+body {
+  @apply bg-black-deep text-text-muted font-sans antialiased overflow-x-hidden selection:bg-neon selection:text-white transition-colors duration-500 ease-in-out;
+}
+
+h1, h2, h3, .logo, .nav-link, .glow-button, strong, .glass-panel {
+  @apply transition-colors duration-500;
+}
+
+h1, h2, h3, .logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  @apply text-text-main;
+}
+
+.glass-panel {
+  @apply bg-white-glass backdrop-blur-[12px] border border-border-glass rounded-xl shadow-sm;
+}
+
+.glow-button {
+  background-color: var(--theme-neon);
+  color: #fff;
+  @apply font-bold tracking-normal shadow-[0_4px_14px_0_rgba(0,168,67,0.39)] hover:shadow-[0_6px_20px_rgba(0,168,67,0.23)] transition-all duration-300;
+}
+
+body:not(.light) .glow-button {
+  color: #000;
+  @apply shadow-[0_0_20px_rgba(0,255,102,0.2)] hover:shadow-[0_0_30px_rgba(0,255,102,0.4)];
+}
+
+.text-gradient {
+  background-image: linear-gradient(to bottom right, var(--gradient-text-start), var(--gradient-text-end));
+  @apply bg-clip-text text-transparent;
+}
