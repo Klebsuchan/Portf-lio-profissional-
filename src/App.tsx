@@ -567,7 +567,7 @@ export default function App() {
                   {feedback.text}
                 </p>
                 <div className="flex items-center gap-3 mt-auto">
-                  <img src={feedback.img} alt={feedback.name} className="w-9 h-9 rounded-full border-2 border-border-glass object-cover" />
+                  <img loading="lazy" decoding="async" width="36" height="36" src={feedback.img} alt={feedback.name} className="w-9 h-9 rounded-full border-2 border-border-glass object-cover" />
                   <div className="flex flex-col">
                     <span className="text-text-main font-bold text-[11px]">{feedback.name}</span>
                     <span className="text-text-muted text-[9px] uppercase tracking-wider">{feedback.role}</span>
