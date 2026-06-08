@@ -1,4 +1,5 @@
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useRef } from 'react';
 import {
   Server,
   Database,
@@ -36,6 +37,24 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
+  // Parallax Setup
+  const { scrollY } = useScroll();
+  
+  // Hero Background Parallax (moves slower than foreground)
+  const bgYBlob1 = useTransform(scrollY, [0, 1000], [0, 250]);
+  const bgYBlob2 = useTransform(scrollY, [0, 1000], [0, -150]);
+  
+  // Hero Elements Parallax
+  const heroContentY = useTransform(scrollY, [0, 800], [0, 100]);
+
+  // Projects Parallax Ref
+  const projectsRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: projectsScroll } = useScroll({
+    target: projectsRef,
+    offset: ["start end", "end start"]
+  });
+  const projectsBgY = useTransform(projectsScroll, [0, 1], [-100, 100]);
+
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.remove('light');
@@ -62,8 +81,8 @@ export default function App() {
     <div className="min-h-screen transition-colors duration-500 ease-in-out">
       {/* Background ambient light */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-neon opacity-10 blur-[150px] rounded-full"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple opacity-[0.07] blur-[150px] rounded-full"></div>
+        <motion.div style={{ y: bgYBlob1 }} className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-neon opacity-10 blur-[150px] rounded-full"></motion.div>
+        <motion.div style={{ y: bgYBlob2 }} className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple opacity-[0.07] blur-[150px] rounded-full"></motion.div>
       </div>
 
       {/* Navbar */}
@@ -142,8 +161,8 @@ export default function App() {
 
       <main className="relative z-10 pt-24 pb-8 max-w-[1440px] mx-auto px-6 lg:px-10 lg:grid lg:grid-cols-[420px_1fr] lg:gap-x-6 lg:gap-y-5">
         {/* HERO SECTION */}
-        <section className="lg:col-start-1 lg:row-span-8 lg:sticky lg:top-[90px] self-start mt-4 mb-12 lg:mb-0">
-          <div className="flex flex-col">
+        <section className="lg:col-start-1 lg:row-span-8 lg:sticky lg:top-[90px] self-start mt-4 mb-12 lg:mb-0 z-10">
+          <motion.div style={{ y: heroContentY }} className="flex flex-col">
             <motion.div
               initial="hidden"
               animate="visible"
@@ -155,20 +174,20 @@ export default function App() {
 
               <motion.h1 
                 variants={FADE_UP}
-                className="font-display text-[42px] leading-[1.1] mb-5 text-gradient font-bold"
+                className="font-display text-[32px] md:text-[42px] lg:text-[48px] leading-[1.1] mb-5 text-gradient font-bold"
               >
                 Arquitetura e Engenharia de Software para o Futuro do seu Negócio.
               </motion.h1>
               
               <motion.p 
                 variants={FADE_UP}
-                className="text-[16px] leading-[1.6] opacity-80 mb-8 max-w-md text-text-muted"
+                className="text-[15px] md:text-[16px] leading-[1.6] opacity-80 mb-8 max-w-md text-text-muted"
               >
                 Desenvolvedor focado em performance, consistência de dados e conversão. 
                 Transformo visões de mercado em plataformas digitais escaláveis e experiências cinematográficas.
               </motion.p>
               
-              <motion.div variants={FADE_UP} className="flex flex-row gap-4">
+              <motion.div variants={FADE_UP} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <a href="https://wa.me/5554991064604" target="_blank" rel="noreferrer" className="glow-button px-7 py-3.5 rounded-md flex items-center justify-center text-[14px]">
                   Agendar Call Estratégica
                 </a>
@@ -213,7 +232,7 @@ export default function App() {
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         </section>
 
         {/* ABOUT & EDU */}
@@ -331,7 +350,7 @@ export default function App() {
         </section>
 
         {/* TECH STACK */}
-        <section id="stack" className="lg:col-start-2 mb-6 lg:mb-0">
+        <section id="stack" className="lg:col-start-2 mb-6 lg:mb-0 relative z-10">
           <div className="mb-4">
             <h2 className="font-display text-[18px] font-bold text-text-main flex items-center">
               <Layers className="text-purple mr-2" size={18} />
@@ -340,7 +359,7 @@ export default function App() {
             <p className="text-text-muted text-[12px] mt-1">Ferramentas de alta performance que utilizo no ecossistema de desenvolvimento empresarial.</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="flex flex-wrap gap-2 md:gap-3">
             {[
               "React & Next.js",
               "Node.js & Express",
@@ -354,9 +373,9 @@ export default function App() {
               <motion.div
                 key={idx}
                 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP} transition={{ delay: idx * 0.05 }}
-                className="glass-panel p-3 flex items-center justify-center text-center hover:border-purple/30 transition-colors"
+                className="glass-panel px-4 py-2.5 flex items-center justify-start text-left hover:border-purple/30 transition-colors shrink-0"
               >
-                <span className="text-[11px] font-semibold text-text-muted opacity-80">{tech}</span>
+                <span className="text-[12px] sm:text-[13px] font-semibold text-text-main opacity-90">{tech}</span>
               </motion.div>
             ))}
           </div>
@@ -442,75 +461,126 @@ export default function App() {
         </section>
 
         {/* PROJECTS */}
-        <section id="projetos" className="lg:col-start-2 mb-6 lg:mb-0">
+        <section ref={projectsRef} id="projetos" className="lg:col-start-2 mb-6 lg:mb-0 relative">
+          <motion.div 
+            style={{ y: projectsBgY }} 
+            className="absolute right-[-10%] top-[20%] w-[400px] h-[400px] bg-neon opacity-5 blur-[100px] rounded-full pointer-events-none z-0"
+          />
           <div className="sr-only">
             <h2>Trabalhos em Desenvolvimento</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="mb-6 relative z-10 w-full overflow-hidden mask-image-marquee">
+            <div className="flex animate-marquee gap-4 w-[max-content]">
+              {/* Double array for infinite effect */}
+              {[...Array(2)].map((_, loopIdx) => (
+                <div key={loopIdx} className="flex gap-4">
+                  {[
+                    "/image.png",
+                    "/image (1).png",
+                    "/image (2).png",
+                    "/image (3).png",
+                    "/image (4).png",
+                    "/image (5).png",
+                    "/image (6).png",
+                    "/image (7).png",
+                    "/image (8).png",
+                    "/image (9).png",
+                    "/image (10).png",
+                  ].map((src, idx) => (
+                    <div key={idx} className="w-[280px] h-[160px] md:w-[320px] md:h-[180px] shrink-0 rounded-xl overflow-hidden border border-border-glass bg-white-glass/10 shadow-sm relative group">
+                      <img 
+                        src={src} 
+                        alt={`Projeto ${idx}`} 
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div className="absolute inset-0 bg-black-deep/20 group-hover:bg-transparent transition-colors duration-500" />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 relative z-10">
             {[
               {
+                title: "Animed Petshop e Veterinária",
+                desc: "Plataforma de gestão e agendamento para clínica veterinária e petshop. Focada na experiência do usuário e na organização de consultas e serviços de banho e tosa.",
+                tags: ["React", "TypeScript", "Vercel"],
+                color: "cyan",
+                stack: ["React", "TypeScript", "Tailwind CSS"],
+                href: "https://github.com/braianklebercamargo-sketch/Animed-Petshop-e-Veterin-ria"
+              },
+              {
+                title: "Naturalmix Restaurant",
+                desc: "Landing page e cardápio digital para restaurante focado em alimentação saudável. Otimizado para SEO, carregamento rápido e design voltado para conversão.",
+                tags: ["Landing Page", "Food", "Vercel"],
+                color: "neon",
+                stack: ["React", "TypeScript", "Tailwind CSS"],
+                href: "https://naturalmix-restaurant.vercel.app"
+              },
+              {
+                title: "Nossa História de Amor",
+                desc: "Template interativo e imersivo para casais (convites digitais e álbuns de casamento). Contém animações fluidas e design emocional.",
+                tags: ["Interactive", "Motion", "Vercel"],
+                color: "purple",
+                stack: ["React", "TypeScript", "Framer Motion", "Tailwind"],
+                href: "https://nossa-hist-ria-de-amor-six.vercel.app"
+              },
+              {
                 title: "Klebsuchan",
-                desc: "Blog e plataforma de conteúdo focado no universo nerd, cultura pop, anime, filmes, games e tecnologia. O sistema apresenta uma estrutura de categorias otimizada e um CMS desenhado para alta performance na entrega de postagens estruturadas.",
-                tags: ["Blog Nerd", "Conteúdo", "Em Desenvolvimento"],
+                desc: "Blog e plataforma de conteúdo focado no universo nerd, cultura pop, anime e tecnologia. Estrutura otimizada para SEO e alta performance.",
+                tags: ["Blog Nerd", "Conteúdo", "Vercel"],
                 color: "cyan",
-                stack: ["Next.js", "TypeScript", "Tailwind CSS", "CMS"]
+                stack: ["Next.js", "TypeScript", "Tailwind CSS"],
+                href: "https://klebsuchan-braianklebercamargo-sketchs-projects.vercel.app"
               },
               {
-                title: "Kleber Finance (NexusFC)",
-                desc: "Sistema financeiro focado em métricas, automação e dashboards interativos para monitoramento. Emprega práticas de gestão de fluxo de caixa, visualização de dados via gráficos e integrações para controle automatizado de entradas e saídas.",
-                tags: ["Finance", "Dashboard", "Em Desenvolvimento"],
+                title: "Harrisson e Kali",
+                desc: "Projeto comemorativo de relacionamento estruturado com design inovador e visual envolvente com galeria de memórias interativa.",
+                tags: ["Personalite", "Galeria", "Vercel"],
                 color: "neon",
-                stack: ["React", "Express", "Node.js", "PostgreSQL"]
+                stack: ["React", "TypeScript", "Tailwind CSS"],
+                href: "https://harrisson-e-kali.vercel.app"
               },
               {
-                title: "E-book Arquitetura",
-                desc: "Landing Page projetada com alto rigor estético e focada nativamente em otimização de conversão (CRO). Traz uma experiência sofisticada, tipografia estruturada e blocos de conteúdo desenvolvidos para maximizar a venda de material de arquitetura.",
-                tags: ["Landing Page", "Infoproduto", "WIP"],
-                color: "slate",
-                stack: ["React", "Vite", "Tailwind", "Framer Motion"]
+                title: "Braian e Stefani",
+                desc: "Plataforma em formato de linha do tempo desenvolvida em React para arquivamento e exposição de história amorosa de forma cronológica.",
+                tags: ["UX", "História", "GitHub"],
+                color: "purple",
+                stack: ["React", "TypeScript", "Tailwind CSS"],
+                href: "https://github.com/braianklebercamargo-sketch/Braian-e-Stefani---uma-hist-ria-de-amor"
               },
               {
-                title: "E-book Bolo de Pote",
-                desc: "Landing Page interativa e atraente para comercialização de e-book no nicho de confeitaria, aplicando técnicas pesadas de copywriting e layout guiado com gatilhos mentais estruturados diretamente na UI para originar alta taxa de conversão.",
-                tags: ["Landing Page", "Vendas", "WIP"],
-                color: "slate",
-                stack: ["React", "Next.js", "Tailwind CSS"]
-              },
-              {
-                title: "Achar Temas",
-                desc: "Plataforma SaaS de curadoria e diretório de temas e templates para desenvolvimento front-end. Focada em indexação rápida, velocidade otimizada de acesso e um sistema avançado de busca filtrada em tempo real.",
-                tags: ["Directory", "Performance", "Em Desenvolvimento"],
+                title: "Maiara e Marcelo",
+                desc: "Layout responsivo focado em micro-interações, estruturado para convite imersivo focado em usabilidade unificada em navegadores móveis.",
+                tags: ["Frontend", "Convite", "GitHub"],
                 color: "cyan",
-                stack: ["Next.js", "React", "Prisma", "PostgreSQL"]
+                stack: ["React", "TypeScript", "UI/UX"],
+                href: "https://github.com/braianklebercamargo-sketch/Uma-hist-ria-de-amor-Maiara-e-Marcelo-"
               },
               {
-                title: "Hackathon Core",
-                desc: "Boilerplate e estrutura base de repositório com componentes aceleradores para desenvolvimento ultra rápido de aplicações e estruturação para competições (hackathons), garantindo fundações seguras sem perder agilidade na execução ágil.",
-                tags: ["Hackathon", "MVP", "WIP"],
-                color: "white",
-                stack: ["React", "Node.js", "TypeScript", "Tailwind"]
-              },
-              {
-                title: "StellarCare",
-                desc: "Plataforma SaaS fechada focada em gestão inteligente, otimização e controle para a área de saúde.",
-                tags: ["Health Tech", "SaaS", "Repositório Privado"],
-                color: "neon",
-                stack: ["Next.js", "TypeScript", "Node.js", "Docker"]
-              },
-              {
-                title: "Core Services (Privados)",
-                desc: "APIs robustas, integrações e microsserviços desenvolvidos para operação interna e clientes corporativos.",
-                tags: ["Backend", "Arquitetura", "Repositório Privado"],
-                color: "cyan",
-                stack: ["Node.js", "Express", "Microservices", "GCP"]
+                title: "Core Services & API",
+                desc: "Repositório base de estudos, interfaces genéricas e projetos privados. Focado em escalabilidade, arquitetura limpa e testes unitários.",
+                tags: ["Backend", "Arquitetura", "Privado"],
+                color: "slate",
+                stack: ["Node.js", "Express", "Microservices", "GCP"],
+                href: "https://github.com/braianklebercamargo-sketch"
               }
-            ].map((project, idx) => (
-              <motion.div 
+            ].map((project, idx) => {
+              const MotionTag = project.href ? motion.a : motion.div;
+              return (
+              <MotionTag 
                 key={project.title}
+                href={project.href}
+                target={project.href ? "_blank" : undefined}
+                rel={project.href ? "noopener noreferrer" : undefined}
                 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={FADE_UP}
                 transition={{ delay: idx * 0.1 }}
-                className="glass-panel p-4 flex flex-col justify-start relative overflow-hidden group hover:border-purple/50 transition-colors"
+                className="glass-panel p-4 flex flex-col justify-start relative overflow-hidden group hover:border-purple/50 transition-colors h-full"
               >
                 <div className="mb-2">
                   <span className="text-[9px] font-extrabold uppercase bg-purple/10 text-purple px-1.5 py-0.5 rounded mr-1 inline-block">
@@ -518,7 +588,7 @@ export default function App() {
                   </span>
                 </div>
                 
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col flex-1">
                   <h3 className="font-bold text-[14px] text-text-main mb-1 group-hover:text-purple transition-colors">{project.title}</h3>
                   <p className="text-text-muted text-[11px] opacity-60 leading-[1.4] mb-3">{project.desc}</p>
                   
@@ -530,8 +600,8 @@ export default function App() {
                     ))}
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              </MotionTag>
+            )})}
           </div>
         </section>
 
