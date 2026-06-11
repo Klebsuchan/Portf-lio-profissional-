@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { useRef } from 'react';
 import {
   Server,
@@ -39,6 +39,7 @@ export default function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [lang, setLang] = useState<'en' | 'pt'>('en');
   const [githubRepos, setGithubRepos] = useState<any[]>([]);
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
 
   useEffect(() => {
     fetch('https://api.github.com/users/braianklebercamargo-sketch/repos')
@@ -191,6 +192,21 @@ export default function App() {
               animate="visible"
               variants={STAGGER}
             >
+              <motion.div variants={FADE_UP} className="mb-6 w-max">
+                <button 
+                  onClick={() => setIsPhotoModalOpen(true)}
+                  className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden border-2 border-neon/40 p-1 group relative transition-all duration-300 hover:scale-[1.03] focus:outline-none"
+                  aria-label="View photo"
+                >
+                  <div className="w-full h-full rounded-full overflow-hidden relative">
+                    <img src="/IMG_3638.jpeg" alt="Braian Kleber" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black-deep/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-6 h-6 text-white"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" /></svg>
+                    </div>
+                  </div>
+                </button>
+              </motion.div>
+              
               <motion.div variants={FADE_UP} className="text-[11px] uppercase tracking-[0.2em] text-purple mb-3 block">
                 {lang === 'en' ? 'High-Level Software Engineering' : 'Engenharia de Software de Alto Nível'}
               </motion.div>
@@ -795,6 +811,38 @@ export default function App() {
       >
         <ArrowUp size={18} />
       </motion.button>
+
+      {/* PHOTO MODAL */}
+      <AnimatePresence>
+        {isPhotoModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black-deep/90 backdrop-blur-sm p-4"
+            onClick={() => setIsPhotoModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative max-w-[500px] w-full rounded-2xl overflow-hidden glass-panel border-2 border-neon/50 p-2"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setIsPhotoModalOpen(false)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black-deep/50 flex items-center justify-center text-white hover:bg-black-deep transition-colors z-10"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+              <div className="w-full aspect-square rounded-xl overflow-hidden relative">
+                <img src="/IMG_3638.jpeg" alt="Braian Kleber Full" className="w-full h-full object-cover" />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
