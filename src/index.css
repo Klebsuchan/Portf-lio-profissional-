@@ -44,8 +44,10 @@
   --color-text-muted: var(--text-secondary);
 }
 
-body {
+html, body {
   @apply bg-black-deep text-text-muted font-sans antialiased overflow-x-hidden selection:bg-neon selection:text-white transition-colors duration-500 ease-in-out;
+  width: 100vw;
+  max-width: 100%;
 }
 
 h1, h2, h3, .logo, .nav-link, .glow-button, strong, .glass-panel {
