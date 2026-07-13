@@ -1,6 +1,8 @@
 {
-  "name": "Braian Kleber Portfolio",
-  "description": "Portfólio de Engenharia de Software e Produtos Digitais",
+  "name": "Portfólio Kleber - Eng. Software",
+  "description": "Landing page e portfólio de alta conversão para serviços de desenvolvimento e engenharia de software.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
